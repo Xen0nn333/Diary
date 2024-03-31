@@ -29,6 +29,10 @@ class Card(db.Model):
     
 
 #Задание №1. Создать таблицу User
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    login = db.Column(db.String(100), nullable=False)
+    password = db.Column(db.String(30), nullable=False)
 
 
 
@@ -47,7 +51,13 @@ def login():
             form_password = request.form['password']
             
             #Задание №4. Реализовать проверку пользователей
-            
+            users_db = User.query.all()
+            for user in users_db:
+                if form_login == user.login and form_password == user.password:
+                    return redirect('/index')
+                else:
+                    error = 'Неправильно указан пользователь или пароль'
+                    return render_template('login.html', error=error)
 
 
             
@@ -63,7 +73,9 @@ def reg():
         password = request.form['password']
         
         #Задание №3. Реализовать запись пользователей
-        
+        user=User(login=login, password=password)
+        db.session.add(user)
+        db.session.commit()
 
         
         return redirect('/')
